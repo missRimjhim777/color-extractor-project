@@ -1,0 +1,214 @@
+Here’s what is happening step-by-step in simple words.
+
+1. Initial Setup
+
+At the top:
+
+$image = "";
+$dominantColors = [];
+$extraColors = [];
+
+You create:
+
+$image → stores uploaded image path
+$dominantColors → top 10 colors
+$extraColors → additional colors
+2. Form Submission Check
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image']))
+
+This means:
+
+“Run this code only when user uploads an image and clicks Extract Colors.”
+
+3. Upload Folder Creation
+if(!file_exists($targetDir)){
+    mkdir($targetDir, 0777, true);
+}
+
+If uploads folder doesn’t exist:
+
+create it automatically
+4. Unique File Name
+$fileName = time() . "_" . basename($_FILES["image"]["name"]);
+
+Example:
+
+171234567_cat.jpg
+
+Why?
+To avoid overwriting old uploaded images.
+
+5. Uploading Image
+move_uploaded_file(...)
+
+Moves image from temporary PHP memory into:
+
+uploads/
+
+folder.
+
+6. Image Path Storage
+$image = $targetFile;
+
+Stores uploaded image path.
+
+Example:
+
+uploads/17123_eye.jpg
+
+Used later to display original image.
+
+7. Color Extraction Library
+$palette = Palette::fromFilename($image);
+
+Library reads every pixel from image.
+
+Then:
+
+$extractor = new ColorExtractor($palette);
+
+creates extractor object.
+
+8. Top 10 Dominant Colors
+$topColors = $extractor->extract(10);
+
+Library finds:
+
+10 most frequent colors in image
+
+Then:
+
+foreach($topColors as $color)
+
+loops through all colors.
+
+9. RGB Integer → HEX
+
+Library gives colors internally as integers.
+
+This converts them:
+
+Color::fromIntToHex($color);
+
+Example:
+
+16711680
+
+becomes:
+
+#FF0000
+10. Dominant Colors Array
+$dominantColors[] = [
+    'hex' => $hex
+];
+
+Stores colors like:
+
+[
+   ['hex' => '#FF2000'],
+   ['hex' => '#261116']
+]
+11. Extra Colors Extraction
+$moreColors = $extractor->extract(60);
+
+Now library extracts MORE colors.
+
+12. Skipping First 10
+if($index < 10){
+    continue;
+}
+
+This skips:
+
+first 10 dominant colors
+
+because you already showed them above.
+
+13. Extra Colors Array
+
+Remaining colors go into:
+
+$extraColors[]
+
+These become:
+
+“More Extracted Colors”
+
+14. HTML UI
+Upload Form
+
+User:
+
+chooses image
+clicks Extract Colors
+15. Loader
+document.getElementById("loader").style.display = "block";
+
+Spinner appears while page reloads.
+
+16. Original Image Display
+<img src="<?php echo $image; ?>">
+
+Shows uploaded image.
+
+17. Dominant Colors Section
+foreach($dominantColors as $c)
+
+Creates:
+
+color cards
+hex code
+copy button
+18. More Colors Section
+foreach($extraColors as $index => $c)
+
+Creates hidden extra cards.
+
+Initially:
+
+display:none;
+19. Load More Button
+
+When clicked:
+
+loadMoreColors()
+
+runs.
+
+20. JavaScript Reveals Colors
+if(count < 10)
+
+Shows:
+
+10 more hidden cards at a time
+21. Button Hides Automatically
+
+When no hidden colors remain:
+
+loadMoreBtn.style.display = "none";
+OVERALL FLOW
+User Uploads Image
+
+⬇
+
+PHP Saves Image
+
+⬇
+
+Library Extracts Colors
+
+⬇
+
+Top 10 Stored Separately
+
+⬇
+
+Extra Colors Stored Separately
+
+⬇
+
+HTML Creates Cards
+
+⬇
+
+JS Handles Load More + Preview + Copy
