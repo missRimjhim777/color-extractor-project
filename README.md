@@ -6,10 +6,6 @@ A PHP-based web application that extracts the dominant colors from an uploaded i
 
 **Website:** https://colorextractor.freedev.app
 
-## 📸 Preview
-
-> Add one or two screenshots of the application here.
-
 ## ✨ Features
 
 * Upload images in multiple formats
